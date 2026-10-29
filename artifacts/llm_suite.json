@@ -1,0 +1,934 @@
+{
+  "model": "gemma:2b",
+  "generated_at_utc": "2026-10-29T09:31:58.951965+00:00",
+  "provenance": "Eight authored cases selected before this run. Essential facts were written by Codex from the sample sources, separately from parser outputs. This is a small source-based evaluation, not an independently annotated benchmark.",
+  "rubric": {
+    "correctness": "0: core behavior is wrong; 1: correct core with a factual error or misleading claim; 2: claims agree with the supplied source.",
+    "completeness": "0: core behavior is absent; 1: core is covered but an essential fact is missing; 2: all essential facts below are covered. Facts can occur in summary, behavior or parameter notes.",
+    "clarity": "0: unusable prose; 1: understandable with confusing or repetitive wording; 2: clear, concise prose.",
+    "unsupported_claims": "List concrete statements contradicted by, or not established in, the supplied source. Valid citation IDs are not a factuality score."
+  },
+  "cases": [
+    {
+      "id": "books-list",
+      "project": "bookstore",
+      "method": "GET",
+      "path": "/v1/books",
+      "essential_facts": [
+        "Returns the in-memory catalog as a list.",
+        "Slices results using the limit query parameter; default 10.",
+        "The declared limit range is 1 to 50."
+      ],
+      "evidence": [
+        {
+          "id": "SRC-816869edf3",
+          "file": "routes.py",
+          "start": 9,
+          "end": 11,
+          "code": "def list_books(limit: int = Query(10, ge=1, le=50)):\n    \"\"\"List books up to the requested result limit.\"\"\"\n    return list(BOOKS.values())[:limit]"
+        },
+        {
+          "id": "SRC-022ad8ac01",
+          "file": "models.py",
+          "start": 11,
+          "end": 16,
+          "code": "class Book(BaseModel):\n    id: int\n    title: str\n    author: str\n    price: float\n    published: bool = False"
+        }
+      ],
+      "examples": [
+        {
+          "id": "EX-books-list",
+          "title": "List the catalog with a result limit",
+          "method": "GET",
+          "url": "http://localhost:8001/v1/books?limit=5",
+          "text": "EX-books-list | List the catalog with a result limit\nGET http://localhost:8001/v1/books?limit=5",
+          "file": "requests.http",
+          "similarity": 0.7921
+        }
+      ],
+      "generations": {
+        "source only": {
+          "accepted": true,
+          "output": {
+            "summary": "List books up to the requested result limit.",
+            "behavior": "This method returns a list of books up to the specified limit.",
+            "parameter_notes": [
+              {
+                "name": "limit",
+                "description": "Number of books to return"
+              }
+            ],
+            "evidence_ids": [
+              "SRC-816869edf3",
+              "SRC-022ad8ac01"
+            ],
+            "example_ids": [],
+            "limitations": [
+              "The 'limit' parameter must be an integer between 1 and 50."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 8.03,
+            "mode": "source only"
+          }
+        },
+        "source + usage": {
+          "accepted": true,
+          "output": {
+            "summary": "List books up to the requested result limit.",
+            "behavior": "The API returns a list of books matching the specified limit.",
+            "parameter_notes": [
+              {
+                "name": "limit",
+                "description": "Number of books to return"
+              }
+            ],
+            "evidence_ids": [
+              "SRC-816869edf3",
+              "SRC-022ad8ac01"
+            ],
+            "example_ids": [
+              "EX-books-list"
+            ],
+            "limitations": [
+              "The limit must be an integer between 1 and 50."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 2.34,
+            "mode": "source + retrieved usage"
+          }
+        }
+      },
+      "contract": {
+        "name": "list_books",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "int",
+            "required": false,
+            "default": 10,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "description": ""
+          }
+        ],
+        "responses": [
+          {
+            "status": 200,
+            "description": "Declared success response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Book"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "books-create",
+      "project": "bookstore",
+      "method": "POST",
+      "path": "/v1/books",
+      "essential_facts": [
+        "Accepts BookCreate input.",
+        "Assigns the next numeric ID and saves the record in the in-memory catalog.",
+        "Returns the complete saved book with status 201."
+      ],
+      "evidence": [
+        {
+          "id": "SRC-3410d789d1",
+          "file": "routes.py",
+          "start": 15,
+          "end": 20,
+          "code": "def create_book(book: BookCreate):\n    \"\"\"Create a book in the in-memory catalog.\"\"\"\n    book_id = max(BOOKS, default=0) + 1\n    saved = {\"id\": book_id, **book.model_dump()}\n    BOOKS[book_id] = saved\n    return saved"
+        },
+        {
+          "id": "SRC-022ad8ac01",
+          "file": "models.py",
+          "start": 11,
+          "end": 16,
+          "code": "class Book(BaseModel):\n    id: int\n    title: str\n    author: str\n    price: float\n    published: bool = False"
+        },
+        {
+          "id": "SRC-dfb2e6e320",
+          "file": "models.py",
+          "start": 4,
+          "end": 8,
+          "code": "class BookCreate(BaseModel):\n    title: str = Field(..., min_length=1, max_length=120)\n    author: str\n    price: float = Field(..., ge=0)\n    published: bool = False"
+        }
+      ],
+      "examples": [
+        {
+          "id": "EX-books-create",
+          "title": "Add a book to the catalog",
+          "method": "POST",
+          "url": "http://localhost:8001/v1/books",
+          "text": "EX-books-create | Add a book to the catalog\nPOST http://localhost:8001/v1/books\nContent-Type: application/json\n\n{\"title\":\"The Pragmatic Programmer\",\"author\":\"Andrew Hunt\",\"price\":499,\"published\":true}",
+          "file": "requests.http",
+          "similarity": 0.4882
+        }
+      ],
+      "generations": {
+        "source only": {
+          "accepted": true,
+          "output": {
+            "summary": "Create a book in the in-memory catalog.",
+            "behavior": "The `create_book` function takes a `BookCreate` object as input and returns a saved book's ID.",
+            "parameter_notes": [
+              {
+                "name": "book",
+                "description": "The book data to create."
+              }
+            ],
+            "evidence_ids": [
+              "SRC-3410d789d1",
+              "SRC-022ad8ac01",
+              "SRC-dfb2e6e320"
+            ],
+            "example_ids": [],
+            "limitations": [
+              "The `required` parameter ensures that the `book` parameter is always provided."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 2.8,
+            "mode": "source only"
+          }
+        },
+        "source + usage": {
+          "accepted": true,
+          "output": {
+            "summary": "Create a book in the in-memory catalog.",
+            "behavior": "The `create_book` function takes a `BookCreate` object as input and returns a saved book object.",
+            "parameter_notes": [
+              {
+                "name": "book",
+                "description": "The book data to create."
+              }
+            ],
+            "evidence_ids": [
+              "SRC-3410d789d1",
+              "SRC-022ad8ac01",
+              "SRC-dfb2e6e320"
+            ],
+            "example_ids": [
+              "EX-books-create"
+            ],
+            "limitations": [
+              "The `title` field must be a string with a minimum length of 1 and a maximum length of 120 characters."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 2.87,
+            "mode": "source + retrieved usage"
+          }
+        }
+      },
+      "contract": {
+        "name": "create_book",
+        "parameters": [
+          {
+            "name": "book",
+            "in": "body",
+            "type": "BookCreate",
+            "required": true,
+            "default": null,
+            "schema": {
+              "$ref": "#/components/schemas/BookCreate"
+            },
+            "description": ""
+          }
+        ],
+        "responses": [
+          {
+            "status": 201,
+            "description": "Declared success response",
+            "schema": {
+              "$ref": "#/components/schemas/Book"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "books-get",
+      "project": "bookstore",
+      "method": "GET",
+      "path": "/v1/books/{book_id}",
+      "essential_facts": [
+        "Looks up a book using the numeric book_id path parameter.",
+        "Returns the stored book when found.",
+        "Reports 404 when the book is missing."
+      ],
+      "evidence": [
+        {
+          "id": "SRC-1b670bedf3",
+          "file": "routes.py",
+          "start": 24,
+          "end": 28,
+          "code": "def get_book(book_id: int):\n    \"\"\"Find a book by its numeric identifier.\"\"\"\n    if book_id not in BOOKS:\n        raise HTTPException(status_code=404, detail=\"Book not found\")\n    return BOOKS[book_id]"
+        },
+        {
+          "id": "SRC-022ad8ac01",
+          "file": "models.py",
+          "start": 11,
+          "end": 16,
+          "code": "class Book(BaseModel):\n    id: int\n    title: str\n    author: str\n    price: float\n    published: bool = False"
+        }
+      ],
+      "examples": [
+        {
+          "id": "EX-books-get",
+          "title": "Find one book by its identifier",
+          "method": "GET",
+          "url": "http://localhost:8001/v1/books/1",
+          "text": "EX-books-get | Find one book by its identifier\nGET http://localhost:8001/v1/books/1",
+          "file": "requests.http",
+          "similarity": 0.8025
+        }
+      ],
+      "generations": {
+        "source only": {
+          "accepted": true,
+          "output": {
+            "summary": "Find a book by its numeric identifier.",
+            "behavior": "This API endpoint finds a book by its numeric identifier.",
+            "parameter_notes": [
+              {
+                "name": "book_id",
+                "description": "The unique identifier of the book to find."
+              }
+            ],
+            "evidence_ids": [
+              "SRC-1b670bedf3"
+            ],
+            "example_ids": [],
+            "limitations": [
+              "The book must exist in the database."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 2.19,
+            "mode": "source only"
+          }
+        },
+        "source + usage": {
+          "accepted": true,
+          "output": {
+            "summary": "Find a book by its numeric identifier.",
+            "behavior": "Get a book by its ID from the database.",
+            "parameter_notes": [
+              {
+                "name": "book_id",
+                "description": "The ID of the book to find."
+              }
+            ],
+            "evidence_ids": [
+              "SRC-1b670bedf3"
+            ],
+            "example_ids": [
+              "EX-books-get"
+            ],
+            "limitations": [
+              "The book must exist in the database."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 2.26,
+            "mode": "source + retrieved usage"
+          }
+        }
+      },
+      "contract": {
+        "name": "get_book",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "type": "int",
+            "required": true,
+            "default": null,
+            "schema": {
+              "type": "integer"
+            },
+            "description": ""
+          }
+        ],
+        "responses": [
+          {
+            "status": 200,
+            "description": "Declared success response",
+            "schema": {
+              "$ref": "#/components/schemas/Book"
+            }
+          },
+          {
+            "status": 404,
+            "description": "Book not found",
+            "schema": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "books-delete",
+      "project": "bookstore",
+      "method": "DELETE",
+      "path": "/v1/books/{book_id}",
+      "essential_facts": [
+        "Deletes the existing in-memory book by book_id.",
+        "Reports 404 when it is missing.",
+        "Declares success status 204 and no response body."
+      ],
+      "evidence": [
+        {
+          "id": "SRC-e85158678b",
+          "file": "routes.py",
+          "start": 41,
+          "end": 45,
+          "code": "def delete_book(book_id: int):\n    \"\"\"Remove an existing book from the catalog.\"\"\"\n    if book_id not in BOOKS:\n        raise HTTPException(status_code=404, detail=\"Book not found\")\n    del BOOKS[book_id]"
+        }
+      ],
+      "examples": [
+        {
+          "id": "EX-books-delete",
+          "title": "Remove a book from the catalog",
+          "method": "DELETE",
+          "url": "http://localhost:8001/v1/books/1",
+          "text": "EX-books-delete | Remove a book from the catalog\nDELETE http://localhost:8001/v1/books/1",
+          "file": "requests.http",
+          "similarity": 0.8556
+        }
+      ],
+      "generations": {
+        "source only": {
+          "accepted": true,
+          "output": {
+            "summary": "Delete an existing book from the catalog.",
+            "behavior": "This method removes an book from the `BOOKS` list based on the `book_id` provided in the request path.",
+            "parameter_notes": [
+              {
+                "name": "book_id",
+                "description": "The ID of the book to delete."
+              }
+            ],
+            "evidence_ids": [
+              "SRC-e85158678b"
+            ],
+            "example_ids": [],
+            "limitations": [
+              "The book must exist in the catalog."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 2.46,
+            "mode": "source only"
+          }
+        },
+        "source + usage": {
+          "accepted": true,
+          "output": {
+            "summary": "Remove an existing book from the catalog.",
+            "behavior": "The `delete_book` function removes an book from the `BOOKS` list based on the `book_id` provided in the request path.",
+            "parameter_notes": [
+              {
+                "name": "book_id",
+                "description": "The ID of the book to delete."
+              }
+            ],
+            "evidence_ids": [
+              "SRC-e85158678b"
+            ],
+            "example_ids": [
+              "EX-books-delete"
+            ],
+            "limitations": [
+              "The book must exist in the catalog."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 2.51,
+            "mode": "source + retrieved usage"
+          }
+        }
+      },
+      "contract": {
+        "name": "delete_book",
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "type": "int",
+            "required": true,
+            "default": null,
+            "schema": {
+              "type": "integer"
+            },
+            "description": ""
+          }
+        ],
+        "responses": [
+          {
+            "status": 204,
+            "description": "Declared success response",
+            "schema": {}
+          },
+          {
+            "status": 404,
+            "description": "Book not found",
+            "schema": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "tickets-create",
+      "project": "support",
+      "method": "POST",
+      "path": "/api/tickets",
+      "essential_facts": [
+        "Reads the title from the JSON request.",
+        "Assigns an ID, sets status to open and stores the ticket in memory.",
+        "Returns the ticket and status 201."
+      ],
+      "evidence": [
+        {
+          "id": "SRC-492be5ae44",
+          "file": "api.py",
+          "start": 15,
+          "end": 21,
+          "code": "def create_ticket():\n    \"\"\"Create a support ticket from the supplied JSON title.\"\"\"\n    data = request.get_json()\n    ticket_id = len(TICKETS) + 1\n    ticket = {\"id\": ticket_id, \"title\": data[\"title\"], \"status\": \"open\"}\n    TICKETS[ticket_id] = ticket\n    return ticket, 201"
+        }
+      ],
+      "examples": [
+        {
+          "id": "EX-tickets-create",
+          "title": "Open a support ticket",
+          "method": "POST",
+          "url": "http://localhost:8002/api/tickets",
+          "text": "EX-tickets-create | Open a support ticket\nPOST http://localhost:8002/api/tickets\nContent-Type: application/json\n\n{\"title\":\"Unable to sign in\"}",
+          "file": "requests.http",
+          "similarity": 0.6214
+        }
+      ],
+      "generations": {
+        "source only": {
+          "accepted": true,
+          "output": {
+            "summary": "Create a support ticket from the supplied JSON title.",
+            "behavior": "The API creates a new ticket object from the provided JSON data and adds it to a global `TICKETS` dictionary.",
+            "parameter_notes": [],
+            "evidence_ids": [
+              "SRC-492be5ae44"
+            ],
+            "example_ids": [],
+            "limitations": [
+              "Unavailable implementation for JSON parsing."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 1.54,
+            "mode": "source only"
+          }
+        },
+        "source + usage": {
+          "accepted": true,
+          "output": {
+            "summary": "Create a support ticket from the supplied JSON title.",
+            "behavior": "The API creates a new support ticket from the provided JSON data.",
+            "parameter_notes": [],
+            "evidence_ids": [
+              "SRC-492be5ae44"
+            ],
+            "example_ids": [
+              "EX-tickets-create"
+            ],
+            "limitations": [
+              "Unavailable implementation"
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 1.8,
+            "mode": "source + retrieved usage"
+          }
+        }
+      },
+      "contract": {
+        "name": "create_ticket",
+        "parameters": [],
+        "responses": [
+          {
+            "status": 201,
+            "description": "Declared success response",
+            "schema": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "tickets-close",
+      "project": "support",
+      "method": "PATCH",
+      "path": "/api/tickets/{ticket_id}/close",
+      "essential_facts": [
+        "Looks up a ticket using its numeric identifier.",
+        "Reports 404 for a missing ticket.",
+        "Sets status to closed and returns the updated ticket."
+      ],
+      "evidence": [
+        {
+          "id": "SRC-54d27937a5",
+          "file": "api.py",
+          "start": 33,
+          "end": 38,
+          "code": "def close_ticket(ticket_id):\n    \"\"\"Mark an existing ticket as closed.\"\"\"\n    if ticket_id not in TICKETS:\n        abort(404)\n    TICKETS[ticket_id][\"status\"] = \"closed\"\n    return TICKETS[ticket_id]"
+        }
+      ],
+      "examples": [
+        {
+          "id": "EX-tickets-close",
+          "title": "Close an existing support ticket",
+          "method": "PATCH",
+          "url": "http://localhost:8002/api/tickets/1/close",
+          "text": "EX-tickets-close | Close an existing support ticket\nPATCH http://localhost:8002/api/tickets/1/close",
+          "file": "requests.http",
+          "similarity": 0.8593
+        }
+      ],
+      "generations": {
+        "source only": {
+          "accepted": true,
+          "output": {
+            "summary": "Mark an existing ticket as closed.",
+            "behavior": "The `close_ticket` function takes a `ticket_id` as a path parameter and marks the corresponding ticket as closed.",
+            "parameter_notes": [
+              {
+                "name": "ticket_id",
+                "description": "The unique ID of the ticket to close."
+              }
+            ],
+            "evidence_ids": [
+              "SRC-54d27937a5"
+            ],
+            "example_ids": [],
+            "limitations": [
+              "The `ticket_id` must be a valid integer."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 2.54,
+            "mode": "source only"
+          }
+        },
+        "source + usage": {
+          "accepted": true,
+          "output": {
+            "summary": "Mark an existing ticket as closed.",
+            "behavior": "Updates the status of a ticket to 'closed' and returns the updated ticket object.",
+            "parameter_notes": [
+              {
+                "name": "ticket_id",
+                "description": "The ID of the ticket to close."
+              }
+            ],
+            "evidence_ids": [
+              "SRC-54d27937a5"
+            ],
+            "example_ids": [
+              "EX-tickets-close"
+            ],
+            "limitations": [
+              "The 'ticket_id' parameter must be an integer and must be provided."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 2.6,
+            "mode": "source + retrieved usage"
+          }
+        }
+      },
+      "contract": {
+        "name": "close_ticket",
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "type": "int",
+            "required": true,
+            "default": null,
+            "schema": {
+              "type": "integer"
+            },
+            "description": ""
+          }
+        ],
+        "responses": [
+          {
+            "status": 200,
+            "description": "Declared success response",
+            "schema": {}
+          },
+          {
+            "status": 404,
+            "description": "Explicit error branch",
+            "schema": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "inventory-create",
+      "project": "inventory",
+      "method": "POST",
+      "path": "/api/items",
+      "essential_facts": [
+        "Accepts ItemCreate and uses the supplied SKU as its key.",
+        "Rejects a duplicate SKU with 409.",
+        "Saves and returns the full in-memory stock record with status 201."
+      ],
+      "evidence": [
+        {
+          "id": "SRC-74b26272eb",
+          "file": "api.py",
+          "start": 15,
+          "end": 21,
+          "code": "def create_item(item: ItemCreate):\n    \"\"\"Add a stock item to the in-memory inventory; reject a duplicate SKU.\"\"\"\n    if item.sku in ITEMS:\n        raise HTTPException(status_code=409, detail=\"SKU already exists\")\n    saved = item.model_dump()\n    ITEMS[item.sku] = saved\n    return saved"
+        },
+        {
+          "id": "SRC-c8da6d1cca",
+          "file": "api.py",
+          "start": 8,
+          "end": 11,
+          "code": "class ItemCreate(BaseModel):\n    sku: str = Field(..., min_length=1, max_length=40)\n    quantity: int = Field(..., ge=0)\n    warehouse: str = \"Surat\""
+        }
+      ],
+      "examples": [
+        {
+          "id": "EX-inventory-create",
+          "title": "Register stock with a SKU and quantity",
+          "method": "POST",
+          "url": "http://localhost:8003/api/items",
+          "text": "EX-inventory-create | Register stock with a SKU and quantity\nPOST http://localhost:8003/api/items\nContent-Type: application/json\n\n{\"sku\":\"SCREW-10\",\"quantity\":25,\"warehouse\":\"Surat\"}",
+          "file": "requests.http",
+          "similarity": 0.511
+        }
+      ],
+      "generations": {
+        "source only": {
+          "accepted": true,
+          "output": {
+            "summary": "Add a stock item to the in-memory inventory; reject a duplicate SKU.",
+            "behavior": "The `create_item` function takes an `ItemCreate` object as input and adds it to the `ITEMS` dictionary. If the SKU already exists, a `409 Conflict` is raised.",
+            "parameter_notes": [
+              {
+                "name": "item",
+                "description": "The item to be added to the inventory."
+              }
+            ],
+            "evidence_ids": [
+              "SRC-74b26272eb",
+              "SRC-c8da6d1cca"
+            ],
+            "example_ids": [],
+            "limitations": [
+              "The `sku` field must be a string with a length between 1 and 40 characters."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 3.02,
+            "mode": "source only"
+          }
+        },
+        "source + usage": {
+          "accepted": true,
+          "output": {
+            "summary": "Add a stock item to the in-memory inventory; reject a duplicate SKU.",
+            "behavior": "The `create_item` function takes an `ItemCreate` object as input and adds it to the `ITEMS` dictionary with the provided SKU as the key. If the SKU already exists, a `409 Conflict` error is raised.",
+            "parameter_notes": [
+              {
+                "name": "item",
+                "description": "The item to be created."
+              },
+              {
+                "name": "item",
+                "description": "The SKU of the item to be created."
+              }
+            ],
+            "evidence_ids": [
+              "SRC-74b26272eb",
+              "SRC-c8da6d1cca"
+            ],
+            "example_ids": [
+              "EX-inventory-create"
+            ],
+            "limitations": [
+              "The `sku` field must be a string with a minimum length of 1 and a maximum length of 40 characters."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 3.59,
+            "mode": "source + retrieved usage"
+          }
+        }
+      },
+      "contract": {
+        "name": "create_item",
+        "parameters": [
+          {
+            "name": "item",
+            "in": "body",
+            "type": "ItemCreate",
+            "required": true,
+            "default": null,
+            "schema": {
+              "$ref": "#/components/schemas/ItemCreate"
+            },
+            "description": ""
+          }
+        ],
+        "responses": [
+          {
+            "status": 201,
+            "description": "Declared success response",
+            "schema": {
+              "$ref": "#/components/schemas/ItemCreate"
+            }
+          },
+          {
+            "status": 409,
+            "description": "SKU already exists",
+            "schema": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "inventory-get",
+      "project": "inventory",
+      "method": "GET",
+      "path": "/api/items/{sku}",
+      "essential_facts": [
+        "Looks up an item using the string SKU path parameter.",
+        "Returns the stored stock record.",
+        "Reports 404 when the SKU is missing."
+      ],
+      "evidence": [
+        {
+          "id": "SRC-1467751284",
+          "file": "api.py",
+          "start": 25,
+          "end": 29,
+          "code": "def get_item(sku: str):\n    \"\"\"Return a stock item by SKU, or report that the SKU is missing.\"\"\"\n    if sku not in ITEMS:\n        raise HTTPException(status_code=404, detail=\"SKU not found\")\n    return ITEMS[sku]"
+        },
+        {
+          "id": "SRC-c8da6d1cca",
+          "file": "api.py",
+          "start": 8,
+          "end": 11,
+          "code": "class ItemCreate(BaseModel):\n    sku: str = Field(..., min_length=1, max_length=40)\n    quantity: int = Field(..., ge=0)\n    warehouse: str = \"Surat\""
+        }
+      ],
+      "examples": [
+        {
+          "id": "EX-inventory-get",
+          "title": "Find stock by its SKU",
+          "method": "GET",
+          "url": "http://localhost:8003/api/items/SCREW-10",
+          "text": "EX-inventory-get | Find stock by its SKU\nGET http://localhost:8003/api/items/SCREW-10",
+          "file": "requests.http",
+          "similarity": 0.6405
+        }
+      ],
+      "generations": {
+        "source only": {
+          "accepted": true,
+          "output": {
+            "summary": "Return a stock item by SKU, or report that the SKU is missing.",
+            "behavior": "Get an item by SKU from the inventory. If the SKU is not found, return a 404 Not Found response.",
+            "parameter_notes": [
+              {
+                "name": "sku",
+                "description": "The SKU of the item to retrieve."
+              }
+            ],
+            "evidence_ids": [
+              "SRC-1467751284",
+              "SRC-c8da6d1cca"
+            ],
+            "example_ids": [],
+            "limitations": [
+              "The SKU must be a string and must be present in the `ITEMS` dictionary."
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 2.72,
+            "mode": "source only"
+          }
+        },
+        "source + usage": {
+          "accepted": true,
+          "output": {
+            "summary": "Return a stock item by SKU, or report that the SKU is missing.",
+            "behavior": "Get an item by its SKU from the inventory.",
+            "parameter_notes": [
+              {
+                "name": "sku",
+                "description": "The SKU of the item to retrieve."
+              }
+            ],
+            "evidence_ids": [
+              "SRC-1467751284"
+            ],
+            "example_ids": [
+              "EX-inventory-get"
+            ],
+            "limitations": [
+              "SKU not found"
+            ],
+            "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+            "model": "gemma:2b",
+            "seconds": 2.24,
+            "mode": "source + retrieved usage"
+          }
+        }
+      },
+      "contract": {
+        "name": "get_item",
+        "parameters": [
+          {
+            "name": "sku",
+            "in": "path",
+            "type": "str",
+            "required": true,
+            "default": null,
+            "schema": {
+              "type": "string"
+            },
+            "description": ""
+          }
+        ],
+        "responses": [
+          {
+            "status": 200,
+            "description": "Declared success response",
+            "schema": {
+              "$ref": "#/components/schemas/ItemCreate"
+            }
+          },
+          {
+            "status": 404,
+            "description": "SKU not found",
+            "schema": {}
+          }
+        ]
+      }
+    }
+  ]
+}

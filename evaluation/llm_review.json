@@ -1,0 +1,198 @@
+{
+  "reviewer": "Codex (assistant)",
+  "method": "Manual reading of all recorded description fields against the supplied source, declared contract and predefined essential facts. Scores are an assistant assessment, not independent human ratings. Static metadata is not counted as generated prose completeness.",
+  "capture_sha256": "46b759a25937478c2b5fa4e1d78c4da4618648c496f222498794e3c52db0e8bb",
+  "cases": {
+    "books-list": {
+      "source only": {
+        "output_sha256": "f40e9a0069fad2d040da26cd75e9e5044456d7c3b167c1acf2b17128623842d9",
+        "scores": {
+          "correctness": 2,
+          "completeness": 1,
+          "clarity": 2
+        },
+        "unsupported_claims": [],
+        "notes": "Accurately describes returning up to the query limit. The default of 10 and in-memory origin are omitted from the prose. The 1-to-50 constraint occurs only in limitations."
+      },
+      "source + usage": {
+        "output_sha256": "fb8212ddb3d9cdc4c7ff26240cb0f1ca4edfca67b4e5beafaaeefe2d360a34f7",
+        "scores": {
+          "correctness": 2,
+          "completeness": 1,
+          "clarity": 2
+        },
+        "unsupported_claims": [],
+        "notes": "Describes limit-based listing; does not state the default of 10 or in-memory origin. Adding the request example did not improve coverage of the essential facts."
+      }
+    },
+    "books-create": {
+      "source only": {
+        "output_sha256": "7fcfeb09f9d512a82ef5c3d2d89379f33682f0b02037b920716a708614af225b",
+        "scores": {
+          "correctness": 0,
+          "completeness": 1,
+          "clarity": 2
+        },
+        "unsupported_claims": [
+          "Claims the function returns only a saved book's ID; it returns the entire saved dictionary.",
+          "Introduces a `required` parameter that is not declared."
+        ],
+        "notes": "The return-value claim contradicts `return saved`. BookCreate input is covered, while the next-ID calculation and status 201 are omitted."
+      },
+      "source + usage": {
+        "output_sha256": "a8de5f52dcc722b2ca8b816ca75bbb2b5c565f54d04666a9484e96d189750b53",
+        "scores": {
+          "correctness": 2,
+          "completeness": 1,
+          "clarity": 2
+        },
+        "unsupported_claims": [],
+        "notes": "Correctly describes BookCreate input and returning a saved book record. It omits how the ID is assigned and status 201. This run improves the return-value claim, not full description completeness."
+      }
+    },
+    "books-get": {
+      "source only": {
+        "output_sha256": "358f638873c48b74011c9cd4ff2c61c4d6192c0fe10eb65d2436c64b786b8b49",
+        "scores": {
+          "correctness": 1,
+          "completeness": 1,
+          "clarity": 2
+        },
+        "unsupported_claims": [
+          "Calls the in-memory BOOKS dictionary a database."
+        ],
+        "notes": "The numeric identifier lookup is correct. The limitation invents database storage, and the returned record and explicit 404 branch are not explained."
+      },
+      "source + usage": {
+        "output_sha256": "f4f6a650d6be9c261f4e769768041fa282a6faeea5bfda384dd128269275512e",
+        "scores": {
+          "correctness": 1,
+          "completeness": 1,
+          "clarity": 2
+        },
+        "unsupported_claims": [
+          "Claims the book comes from a database, while the fixture uses an in-memory dictionary."
+        ],
+        "notes": "The lookup is described, but database storage is unsupported. The 404 branch and explicit numeric path type are omitted."
+      }
+    },
+    "books-delete": {
+      "source only": {
+        "output_sha256": "343ff63ba3b67c25c03ea29155f60fa2191083b330bce2f95e23e398fcf29a3c",
+        "scores": {
+          "correctness": 1,
+          "completeness": 1,
+          "clarity": 1
+        },
+        "unsupported_claims": [
+          "Describes BOOKS as a list; the fixture defines a dictionary."
+        ],
+        "notes": "The deletion by path identifier is covered. The collection type is wrong; the 404 branch, success 204 and no response body are missing. The phrase 'an book' also needs editing."
+      },
+      "source + usage": {
+        "output_sha256": "e7801615d2961ed24c9401637e5a2829755edd33603d62147c29c08677b8ee7e",
+        "scores": {
+          "correctness": 1,
+          "completeness": 1,
+          "clarity": 1
+        },
+        "unsupported_claims": [
+          "Describes BOOKS as a list; the fixture defines a dictionary."
+        ],
+        "notes": "The same list-versus-dictionary error remains with usage context. Neither 404 nor 204/no response body is described; wording needs editing."
+      }
+    },
+    "tickets-create": {
+      "source only": {
+        "output_sha256": "14323c3a7af509d010e5e7aed7498de0b87877323ea5f99d615f46bdd3963f6c",
+        "scores": {
+          "correctness": 2,
+          "completeness": 1,
+          "clarity": 2
+        },
+        "unsupported_claims": [],
+        "notes": "Correctly covers JSON title input and storage in the global dictionary. ID assignment, initial open status, return data and 201 are omitted. Flask's get_json implementation is external to the supplied handler, so the specific JSON-parsing limitation is reasonable."
+      },
+      "source + usage": {
+        "output_sha256": "0ca1135916a570ea47d33717a15df2a9b4bf287270ddac1547b379747f74d950",
+        "scores": {
+          "correctness": 1,
+          "completeness": 1,
+          "clarity": 1
+        },
+        "unsupported_claims": [
+          "States 'Unavailable implementation' without identifying missing code, despite the supplied create_ticket handler."
+        ],
+        "notes": "The core JSON-title creation is accurate. ID assignment, storage, open status and return/201 are missing. The generic implementation limitation is not a useful source-backed explanation."
+      }
+    },
+    "tickets-close": {
+      "source only": {
+        "output_sha256": "63480b2e4e3c5995886c2022628211a7dfd596e542ebebd26069d32cc0a4707c",
+        "scores": {
+          "correctness": 2,
+          "completeness": 1,
+          "clarity": 2
+        },
+        "unsupported_claims": [],
+        "notes": "Correctly describes changing a ticket's status using the path identifier. The explicit 404 branch and returned updated ticket are omitted. The integer restriction is source-backed by the Flask route converter."
+      },
+      "source + usage": {
+        "output_sha256": "5e5f9799db7484cff9684cc62e5e54ae598a7d13fd2aa48a6e70dba5a48bbe23",
+        "scores": {
+          "correctness": 2,
+          "completeness": 1,
+          "clarity": 2
+        },
+        "unsupported_claims": [],
+        "notes": "Correctly covers changing status to closed and returning the updated ticket. The missing-ticket 404 branch is not covered. The integer requirement appears only in limitations."
+      }
+    },
+    "inventory-create": {
+      "source only": {
+        "output_sha256": "001b09adacc6a87667b677508c7a62e2d746f421334729aecc55d412e4e73f29",
+        "scores": {
+          "correctness": 2,
+          "completeness": 1,
+          "clarity": 2
+        },
+        "unsupported_claims": [],
+        "notes": "Correctly covers ItemCreate input, in-memory storage and duplicate-SKU 409. It omits the supplied SKU as the dictionary key and the full returned record/status 201."
+      },
+      "source + usage": {
+        "output_sha256": "2dff2cc9013c548ff7646b6e0fdd67b8a8d75e4d62879870d78787393a93fec1",
+        "scores": {
+          "correctness": 1,
+          "completeness": 1,
+          "clarity": 1
+        },
+        "unsupported_claims": [
+          "A second parameter note describes the whole `item` body as the SKU, although ItemCreate contains sku, quantity and warehouse."
+        ],
+        "notes": "The body, SKU key and duplicate 409 are covered, but the full returned record and 201 are omitted. Duplicate item notes are confusing and one describes the wrong scope."
+      }
+    },
+    "inventory-get": {
+      "source only": {
+        "output_sha256": "d7a33f60e025272ba9b25f804a25aefef6d3e80c2f2af139d538b762ab93c395",
+        "scores": {
+          "correctness": 2,
+          "completeness": 1,
+          "clarity": 2
+        },
+        "unsupported_claims": [],
+        "notes": "Correctly describes returning the inventory record and reporting 404 when absent. The string requirement appears in limitations, rather than the summary, behavior or parameter notes specified by the completeness rubric."
+      },
+      "source + usage": {
+        "output_sha256": "f79372c53ab2fd7ca938f1f884360e5998afd63757c8f3f707b51f0711ddf62f",
+        "scores": {
+          "correctness": 2,
+          "completeness": 1,
+          "clarity": 1
+        },
+        "unsupported_claims": [],
+        "notes": "The SKU lookup and missing-SKU outcome are described. The explicit 404 status and string path type are omitted. 'SKU not found' is an error label rather than a useful limitation."
+      }
+    }
+  }
+}

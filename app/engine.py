@@ -96,12 +96,18 @@ def markdown(record):
     for endpoint in record["endpoints"]:
         prose = endpoint.get("llm") or {}
         source = endpoint["source"]
-        lines += ["", f"## {endpoint['method']} `{endpoint['path']}`", "", prose.get("summary", endpoint["summary"]), "",
-                  prose.get("behavior", endpoint["docstring"] or "Semantic description not generated."), "",
-                  f"Source: `{source['file']}` lines {source['start']}–{source['end']} · `{source['id']}`", "",
-                  "| Parameter | Location | Type | Required |", "|---|---|---|---|"]
-        for p in endpoint["parameters"]:
-            lines.append(f"| {p['name']} | {p['in']} | {p['type'].replace('|',' / ')} | {'Yes' if p['required'] else 'No'} |")
+        summary = prose.get("summary", endpoint["summary"])
+        behavior = prose.get("behavior", endpoint["docstring"] or "Semantic description not generated.")
+        lines += ["", f"## {endpoint['method']} `{endpoint['path']}`", "", summary]
+        if " ".join(behavior.split()).casefold() != " ".join(summary.split()).casefold():
+            lines += ["", behavior]
+        lines += ["", f"Source: `{source['file']}` lines {source['start']}–{source['end']} · `{source['id']}`", ""]
+        if endpoint["parameters"]:
+            lines += ["| Parameter | Location | Type | Required |", "|---|---|---|---|"]
+            for p in endpoint["parameters"]:
+                lines.append(f"| {p['name']} | {p['in']} | {p['type'].replace('|',' / ')} | {'Yes' if p['required'] else 'No'} |")
+        else:
+            lines.append("No parameters declared in the supported function signature.")
         lines += ["", "### Responses", ""]+[f"- {r['status']}: {r['description']}" for r in endpoint["responses"]]
         for example in endpoint["examples"]:
             lines += ["", "### Usage: "+example["title"], "", "```http", example["text"], "```", f"Example source: `{example['file']}` · `{example['id']}`"]

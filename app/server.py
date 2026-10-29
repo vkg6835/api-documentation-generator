@@ -7,18 +7,19 @@ from urllib.parse import urlparse, parse_qs
 
 from app import storage, llm
 from app.engine import analyze, openapi, markdown, compare
+from app.quality import load_quality_report
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT/"static"
 
 
 def demo(name):
-    if name not in ("bookstore", "support"):
+    if name not in ("bookstore", "support", "inventory"):
         raise ValueError("Unknown demonstration project.")
     folder = ROOT/"examples"/name
     files = [{"path":path.relative_to(folder).as_posix(),"content":path.read_text(encoding="utf-8")}
              for path in sorted(folder.rglob("*")) if path.is_file() and path.suffix in (".py",".http")]
-    return {"name":"Bookstore API" if name=="bookstore" else "Support Tickets API","files":files}
+    return {"name":{"bookstore":"Bookstore API","support":"Support Tickets API","inventory":"Inventory API"}[name],"files":files}
 
 
 def initialize():
@@ -98,7 +99,9 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send({"items":[{key:r[key] for key in ("id","name","created_at","status","metrics","demo") if key in r} for r in records]})
             if path=="/api/evaluation":
                 file=ROOT/"artifacts"/"evaluation.json"
-                return self.send(json.loads(file.read_text()) if file.exists() else {"pending":True})
+                result=json.loads(file.read_text()) if file.exists() else {"pending":True}
+                result["llm_quality"]=load_quality_report()
+                return self.send(result)
             if path.startswith("/api/projects/"):
                 pieces=path.strip("/").split("/")
                 record=storage.get(pieces[2])
@@ -154,6 +157,9 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError("No matching endpoints to explain.")
                 if len(ids)>20:
                     raise ValueError("Generate at most 20 endpoint descriptions in one request.")
+                readiness=llm.model_status()
+                if not readiness["available"]:
+                    return self.send({"error":readiness["message"]+" "+readiness["action"],"llm":readiness},503)
                 if not llm.LOCK.acquire(blocking=False):
                     return self.send({"error":"The local model is already drafting descriptions."},409)
                 def begin(value):

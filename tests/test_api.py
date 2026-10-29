@@ -7,9 +7,10 @@ import threading
 import unittest
 import urllib.error
 import urllib.request
+from unittest.mock import patch
 from http.server import ThreadingHTTPServer
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from app import storage
+from app import storage, llm
 from app.engine import analyze
 from app.server import Handler, demo
 
@@ -71,6 +72,23 @@ class APITests(unittest.TestCase):
             text=response.read().decode()
             self.assertIn('Project 31',text)
             self.assertIn("script-src 'self'",response.headers['Content-Security-Policy'])
+
+    def test_unavailable_model_rejected_before_starting_job(self):
+        identifier=self.record['id']
+        before=copy.deepcopy(storage.get(identifier))
+        status={'available':False,'state':'missing_model','message':'Model missing.','action':'Run ollama pull gemma:2b.'}
+        with patch('app.server.llm.model_status',return_value=status),patch('app.server.llm.explain') as generate:
+            code,body,_=self.request('/api/projects/'+identifier+'/explain',{})
+        self.assertEqual(code,503)
+        self.assertIn('ollama pull',body['error'])
+        generate.assert_not_called()
+        self.assertEqual(storage.get(identifier),before)
+
+    def test_busy_model_keeps_the_existing_job(self):
+        with llm.LOCK,patch('app.server.llm.model_status',return_value={'available':True,'busy':True}):
+            code,body,_=self.request('/api/projects/'+self.record['id']+'/explain',{})
+        self.assertEqual(code,409)
+        self.assertIn('already drafting',body['error'])
 
 
 if __name__=='__main__':unittest.main()

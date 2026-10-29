@@ -1,4 +1,4 @@
-# Bookstore API
+# Bookstore presentation rehearsal
 
 Generated from supplied Python source and usage examples. Descriptions are drafts for review.
 
@@ -8,12 +8,9 @@ Endpoints: 6 · Schemas: 2
 
 Report whether the demonstration API process is responding.
 
-Report whether the demonstration API process is responding.
-
 Source: `app.py` lines 9–11 · `SRC-66e3a3d2db`
 
-| Parameter | Location | Type | Required |
-|---|---|---|---|
+No parameters declared in the supported function signature.
 
 ### Responses
 
@@ -28,8 +25,6 @@ GET http://localhost:8001/health
 Example source: `requests.http` · `EX-health`
 
 ## GET `/v1/books`
-
-List books up to the requested result limit.
 
 List books up to the requested result limit.
 
@@ -55,7 +50,7 @@ Example source: `requests.http` · `EX-books-list`
 
 Create a book in the in-memory catalog.
 
-The POST /v1/books endpoint creates a new book in the in-memory catalog. The book is saved in the `BOOKS` dictionary with the id of the book as the key and a dictionary representing the book as its value. The response contains a 201 status code and a JSON response describing the created book.
+The POST /v1/books endpoint creates a new book in the in-memory catalog. The book is saved in the `BOOKS` dictionary with the id of the book as the key and a dictionary representing the book as its value. The response contains a 201 status code indicating success and a JSON response containing the saved book's id.
 
 Source: `routes.py` lines 15–20 · `SRC-3410d789d1`
 
@@ -80,11 +75,9 @@ Example source: `requests.http` · `EX-books-create`
 
 Evidence: SRC-3410d789d1, SRC-022ad8ac01, SRC-dfb2e6e320
 
-Limitations: The book title must be between 1 and 120 characters.
+Limitations: The `title` field must be a string with a minimum length of 1 and a maximum length of 120 characters.
 
 ## GET `/v1/books/{book_id}`
-
-Find a book by its numeric identifier.
 
 Find a book by its numeric identifier.
 
@@ -108,8 +101,6 @@ GET http://localhost:8001/v1/books/1
 Example source: `requests.http` · `EX-books-get`
 
 ## PUT `/v1/books/{book_id}`
-
-Replace the editable fields of an existing book.
 
 Replace the editable fields of an existing book.
 
@@ -137,8 +128,6 @@ Content-Type: application/json
 Example source: `requests.http` · `EX-books-update`
 
 ## DELETE `/v1/books/{book_id}`
-
-Remove an existing book from the catalog.
 
 Remove an existing book from the catalog.
 

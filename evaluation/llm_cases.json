@@ -1,0 +1,19 @@
+{
+  "provenance": "Eight authored cases selected before this run. Essential facts were written by Codex from the sample sources, separately from parser outputs. This is a small source-based evaluation, not an independently annotated benchmark.",
+  "rubric": {
+    "correctness": "0: core behavior is wrong; 1: correct core with a factual error or misleading claim; 2: claims agree with the supplied source.",
+    "completeness": "0: core behavior is absent; 1: core is covered but an essential fact is missing; 2: all essential facts below are covered. Facts can occur in summary, behavior or parameter notes.",
+    "clarity": "0: unusable prose; 1: understandable with confusing or repetitive wording; 2: clear, concise prose.",
+    "unsupported_claims": "List concrete statements contradicted by, or not established in, the supplied source. Valid citation IDs are not a factuality score."
+  },
+  "cases": [
+    {"id":"books-list","project":"bookstore","method":"GET","path":"/v1/books","essential_facts":["Returns the in-memory catalog as a list.","Slices results using the limit query parameter; default 10.","The declared limit range is 1 to 50."]},
+    {"id":"books-create","project":"bookstore","method":"POST","path":"/v1/books","essential_facts":["Accepts BookCreate input.","Assigns the next numeric ID and saves the record in the in-memory catalog.","Returns the complete saved book with status 201."]},
+    {"id":"books-get","project":"bookstore","method":"GET","path":"/v1/books/{book_id}","essential_facts":["Looks up a book using the numeric book_id path parameter.","Returns the stored book when found.","Reports 404 when the book is missing."]},
+    {"id":"books-delete","project":"bookstore","method":"DELETE","path":"/v1/books/{book_id}","essential_facts":["Deletes the existing in-memory book by book_id.","Reports 404 when it is missing.","Declares success status 204 and no response body."]},
+    {"id":"tickets-create","project":"support","method":"POST","path":"/api/tickets","essential_facts":["Reads the title from the JSON request.","Assigns an ID, sets status to open and stores the ticket in memory.","Returns the ticket and status 201."]},
+    {"id":"tickets-close","project":"support","method":"PATCH","path":"/api/tickets/{ticket_id}/close","essential_facts":["Looks up a ticket using its numeric identifier.","Reports 404 for a missing ticket.","Sets status to closed and returns the updated ticket."]},
+    {"id":"inventory-create","project":"inventory","method":"POST","path":"/api/items","essential_facts":["Accepts ItemCreate and uses the supplied SKU as its key.","Rejects a duplicate SKU with 409.","Saves and returns the full in-memory stock record with status 201."]},
+    {"id":"inventory-get","project":"inventory","method":"GET","path":"/api/items/{sku}","essential_facts":["Looks up an item using the string SKU path parameter.","Returns the stored stock record.","Reports 404 when the SKU is missing."]}
+  ]
+}

@@ -15,12 +15,22 @@ class GenerationError(ValueError):
 
 
 def model_status():
+    busy = LOCK.locked()
     try:
         with urllib.request.urlopen(URL+"/api/tags",timeout=2) as response:
             names = [row["name"] for row in json.load(response).get("models",[])]
-        return {"available":MODEL in names,"model":MODEL,"busy":LOCK.locked()}
-    except (OSError,ValueError,KeyError):
-        return {"available":False,"model":MODEL,"busy":LOCK.locked()}
+    except (OSError,ValueError,KeyError,TypeError,AttributeError):
+        return {"available":False,"reachable":False,"model":MODEL,"busy":busy,
+                "state":"unavailable","message":"Ollama is unavailable.",
+                "action":"Start Ollama on this laptop, then select Recheck model."}
+    if MODEL not in names:
+        return {"available":False,"reachable":True,"model":MODEL,"busy":busy,
+                "state":"missing_model","message":f"Ollama is running, but {MODEL} is not installed.",
+                "action":f"Run ollama pull {MODEL}, then select Recheck model."}
+    return {"available":True,"reachable":True,"model":MODEL,"busy":busy,
+            "state":"busy" if busy else "ready",
+            "message":"The local model is drafting descriptions." if busy else f"{MODEL} is ready.",
+            "action":"Wait for the current generation to finish." if busy else ""}
 
 
 def validate(output, endpoint):

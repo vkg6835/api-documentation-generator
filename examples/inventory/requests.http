@@ -1,0 +1,8 @@
+### EX-inventory-create | Register stock with a SKU and quantity
+POST http://localhost:8003/api/items
+Content-Type: application/json
+
+{"sku":"SCREW-10","quantity":25,"warehouse":"Surat"}
+
+### EX-inventory-get | Find stock by its SKU
+GET http://localhost:8003/api/items/SCREW-10
