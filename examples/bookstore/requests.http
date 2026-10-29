@@ -1,0 +1,23 @@
+### EX-health | Check whether the API process responds
+GET http://localhost:8001/health
+
+### EX-books-list | List the catalog with a result limit
+GET http://localhost:8001/v1/books?limit=5
+
+### EX-books-create | Add a book to the catalog
+POST http://localhost:8001/v1/books
+Content-Type: application/json
+
+{"title":"The Pragmatic Programmer","author":"Andrew Hunt","price":499,"published":true}
+
+### EX-books-get | Find one book by its identifier
+GET http://localhost:8001/v1/books/1
+
+### EX-books-update | Replace a book's editable fields
+PUT http://localhost:8001/v1/books/1
+Content-Type: application/json
+
+{"title":"The Pragmatic Programmer","author":"Andrew Hunt","price":450,"published":true}
+
+### EX-books-delete | Remove a book from the catalog
+DELETE http://localhost:8001/v1/books/1

@@ -1,0 +1,618 @@
+{
+  "project_number": 31,
+  "dataset": "Manually annotated authored demonstration APIs. Not a public benchmark or a measure of general documentation quality.",
+  "extraction": {
+    "gold_count": 10,
+    "ast": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "correct": 10,
+      "predicted": 10,
+      "missing": [],
+      "unexpected": []
+    },
+    "regex": {
+      "precision": 0.1,
+      "recall": 0.1,
+      "f1": 0.10000000000000002,
+      "correct": 1,
+      "predicted": 10,
+      "missing": [
+        [
+          "bookstore",
+          "DELETE",
+          "/v1/books/{book_id}"
+        ],
+        [
+          "bookstore",
+          "GET",
+          "/v1/books"
+        ],
+        [
+          "bookstore",
+          "GET",
+          "/v1/books/{book_id}"
+        ],
+        [
+          "bookstore",
+          "POST",
+          "/v1/books"
+        ],
+        [
+          "bookstore",
+          "PUT",
+          "/v1/books/{book_id}"
+        ],
+        [
+          "support",
+          "GET",
+          "/api/tickets"
+        ],
+        [
+          "support",
+          "GET",
+          "/api/tickets/{ticket_id}"
+        ],
+        [
+          "support",
+          "PATCH",
+          "/api/tickets/{ticket_id}/close"
+        ],
+        [
+          "support",
+          "POST",
+          "/api/tickets"
+        ]
+      ],
+      "unexpected": [
+        [
+          "bookstore",
+          "DELETE",
+          "/{book_id}"
+        ],
+        [
+          "bookstore",
+          "GET",
+          ""
+        ],
+        [
+          "bookstore",
+          "GET",
+          "/{book_id}"
+        ],
+        [
+          "bookstore",
+          "POST",
+          ""
+        ],
+        [
+          "bookstore",
+          "PUT",
+          "/{book_id}"
+        ],
+        [
+          "support",
+          "GET",
+          ""
+        ],
+        [
+          "support",
+          "GET",
+          "/{ticket_id}"
+        ],
+        [
+          "support",
+          "PATCH",
+          "/{ticket_id}/close"
+        ],
+        [
+          "support",
+          "POST",
+          ""
+        ]
+      ]
+    }
+  },
+  "retrieval": {
+    "index_count": 10,
+    "dev_count": 4,
+    "test_count": 12,
+    "selected_mode": "unigram",
+    "selection_rule": "Development hit@1, then hit@3 and MRR; test excluded from selection",
+    "experiments": [
+      {
+        "mode": "unigram",
+        "features": 72,
+        "dev": {
+          "hit1": 0.75,
+          "hit3": 1.0,
+          "mrr_at_3": 0.875,
+          "predictions": [
+            {
+              "query": "Browse the bookstore catalog with a maximum result count",
+              "expected": "EX-books-list",
+              "retrieved": [
+                "EX-books-list",
+                "EX-books-delete",
+                "EX-books-create"
+              ]
+            },
+            {
+              "query": "Send a new support request with its title",
+              "expected": "EX-tickets-create",
+              "retrieved": [
+                "EX-books-list",
+                "EX-tickets-create",
+                "EX-books-get"
+              ]
+            },
+            {
+              "query": "Delete a catalog entry by book identifier",
+              "expected": "EX-books-delete",
+              "retrieved": [
+                "EX-books-delete",
+                "EX-books-get",
+                "EX-books-create"
+              ]
+            },
+            {
+              "query": "Look up the details of one support ticket",
+              "expected": "EX-tickets-get",
+              "retrieved": [
+                "EX-tickets-get",
+                "EX-tickets-list",
+                "EX-tickets-close"
+              ]
+            }
+          ]
+        },
+        "test": {
+          "hit1": 0.8333333333333334,
+          "hit3": 1.0,
+          "mrr_at_3": 0.8888888888888888,
+          "predictions": [
+            {
+              "query": "Add a new book with title author price and publication status",
+              "expected": "EX-books-create",
+              "retrieved": [
+                "EX-books-create",
+                "EX-books-update",
+                "EX-books-list"
+              ]
+            },
+            {
+              "query": "Get a single book using its numeric ID",
+              "expected": "EX-books-get",
+              "retrieved": [
+                "EX-books-get",
+                "EX-books-delete",
+                "EX-tickets-get"
+              ]
+            },
+            {
+              "query": "Change the editable fields and price of a book",
+              "expected": "EX-books-update",
+              "retrieved": [
+                "EX-books-update",
+                "EX-books-create",
+                "EX-books-delete"
+              ]
+            },
+            {
+              "query": "Remove an existing book from the bookstore",
+              "expected": "EX-books-delete",
+              "retrieved": [
+                "EX-books-delete",
+                "EX-tickets-close",
+                "EX-books-create"
+              ]
+            },
+            {
+              "query": "Show all books but return only five results",
+              "expected": "EX-books-list",
+              "retrieved": [
+                "EX-books-get",
+                "EX-books-delete",
+                "EX-books-list"
+              ]
+            },
+            {
+              "query": "View every support ticket in the system",
+              "expected": "EX-tickets-list",
+              "retrieved": [
+                "EX-tickets-list",
+                "EX-tickets-create",
+                "EX-tickets-get"
+              ]
+            },
+            {
+              "query": "Open a ticket about an inability to log in",
+              "expected": "EX-tickets-create",
+              "retrieved": [
+                "EX-tickets-create",
+                "EX-tickets-close",
+                "EX-books-create"
+              ]
+            },
+            {
+              "query": "Read the support request having ticket ID one",
+              "expected": "EX-tickets-get",
+              "retrieved": [
+                "EX-tickets-get",
+                "EX-tickets-list",
+                "EX-tickets-close"
+              ]
+            },
+            {
+              "query": "Mark the support ticket as closed",
+              "expected": "EX-tickets-close",
+              "retrieved": [
+                "EX-tickets-list",
+                "EX-tickets-get",
+                "EX-tickets-close"
+              ]
+            },
+            {
+              "query": "POST a JSON book object into the catalog",
+              "expected": "EX-books-create",
+              "retrieved": [
+                "EX-books-create",
+                "EX-books-delete",
+                "EX-tickets-create"
+              ]
+            },
+            {
+              "query": "PUT the changed title author and price for a book",
+              "expected": "EX-books-update",
+              "retrieved": [
+                "EX-books-update",
+                "EX-books-create",
+                "EX-books-delete"
+              ]
+            },
+            {
+              "query": "PATCH a ticket to close it",
+              "expected": "EX-tickets-close",
+              "retrieved": [
+                "EX-tickets-close",
+                "EX-tickets-create",
+                "EX-books-create"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "mode": "word_bigram",
+        "features": 182,
+        "dev": {
+          "hit1": 0.75,
+          "hit3": 1.0,
+          "mrr_at_3": 0.875,
+          "predictions": [
+            {
+              "query": "Browse the bookstore catalog with a maximum result count",
+              "expected": "EX-books-list",
+              "retrieved": [
+                "EX-books-list",
+                "EX-books-delete",
+                "EX-books-create"
+              ]
+            },
+            {
+              "query": "Send a new support request with its title",
+              "expected": "EX-tickets-create",
+              "retrieved": [
+                "EX-books-list",
+                "EX-tickets-create",
+                "EX-books-get"
+              ]
+            },
+            {
+              "query": "Delete a catalog entry by book identifier",
+              "expected": "EX-books-delete",
+              "retrieved": [
+                "EX-books-delete",
+                "EX-books-get",
+                "EX-books-create"
+              ]
+            },
+            {
+              "query": "Look up the details of one support ticket",
+              "expected": "EX-tickets-get",
+              "retrieved": [
+                "EX-tickets-get",
+                "EX-tickets-list",
+                "EX-tickets-close"
+              ]
+            }
+          ]
+        },
+        "test": {
+          "hit1": 0.8333333333333334,
+          "hit3": 1.0,
+          "mrr_at_3": 0.8888888888888888,
+          "predictions": [
+            {
+              "query": "Add a new book with title author price and publication status",
+              "expected": "EX-books-create",
+              "retrieved": [
+                "EX-books-create",
+                "EX-books-update",
+                "EX-books-list"
+              ]
+            },
+            {
+              "query": "Get a single book using its numeric ID",
+              "expected": "EX-books-get",
+              "retrieved": [
+                "EX-books-get",
+                "EX-books-delete",
+                "EX-tickets-get"
+              ]
+            },
+            {
+              "query": "Change the editable fields and price of a book",
+              "expected": "EX-books-update",
+              "retrieved": [
+                "EX-books-update",
+                "EX-books-create",
+                "EX-books-delete"
+              ]
+            },
+            {
+              "query": "Remove an existing book from the bookstore",
+              "expected": "EX-books-delete",
+              "retrieved": [
+                "EX-books-delete",
+                "EX-tickets-close",
+                "EX-books-create"
+              ]
+            },
+            {
+              "query": "Show all books but return only five results",
+              "expected": "EX-books-list",
+              "retrieved": [
+                "EX-books-get",
+                "EX-books-delete",
+                "EX-books-list"
+              ]
+            },
+            {
+              "query": "View every support ticket in the system",
+              "expected": "EX-tickets-list",
+              "retrieved": [
+                "EX-tickets-list",
+                "EX-tickets-create",
+                "EX-tickets-get"
+              ]
+            },
+            {
+              "query": "Open a ticket about an inability to log in",
+              "expected": "EX-tickets-create",
+              "retrieved": [
+                "EX-tickets-create",
+                "EX-tickets-close",
+                "EX-books-create"
+              ]
+            },
+            {
+              "query": "Read the support request having ticket ID one",
+              "expected": "EX-tickets-get",
+              "retrieved": [
+                "EX-tickets-get",
+                "EX-tickets-list",
+                "EX-tickets-close"
+              ]
+            },
+            {
+              "query": "Mark the support ticket as closed",
+              "expected": "EX-tickets-close",
+              "retrieved": [
+                "EX-tickets-list",
+                "EX-tickets-get",
+                "EX-tickets-close"
+              ]
+            },
+            {
+              "query": "POST a JSON book object into the catalog",
+              "expected": "EX-books-create",
+              "retrieved": [
+                "EX-books-create",
+                "EX-books-delete",
+                "EX-books-list"
+              ]
+            },
+            {
+              "query": "PUT the changed title author and price for a book",
+              "expected": "EX-books-update",
+              "retrieved": [
+                "EX-books-update",
+                "EX-books-create",
+                "EX-books-delete"
+              ]
+            },
+            {
+              "query": "PATCH a ticket to close it",
+              "expected": "EX-tickets-close",
+              "retrieved": [
+                "EX-tickets-close",
+                "EX-tickets-create",
+                "EX-books-create"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "mode": "word_char",
+        "features": 931,
+        "dev": {
+          "hit1": 0.75,
+          "hit3": 1.0,
+          "mrr_at_3": 0.875,
+          "predictions": [
+            {
+              "query": "Browse the bookstore catalog with a maximum result count",
+              "expected": "EX-books-list",
+              "retrieved": [
+                "EX-books-list",
+                "EX-books-delete",
+                "EX-books-create"
+              ]
+            },
+            {
+              "query": "Send a new support request with its title",
+              "expected": "EX-tickets-create",
+              "retrieved": [
+                "EX-tickets-create",
+                "EX-tickets-list",
+                "EX-books-list"
+              ]
+            },
+            {
+              "query": "Delete a catalog entry by book identifier",
+              "expected": "EX-books-delete",
+              "retrieved": [
+                "EX-books-get",
+                "EX-books-delete",
+                "EX-books-create"
+              ]
+            },
+            {
+              "query": "Look up the details of one support ticket",
+              "expected": "EX-tickets-get",
+              "retrieved": [
+                "EX-tickets-get",
+                "EX-tickets-list",
+                "EX-tickets-create"
+              ]
+            }
+          ]
+        },
+        "test": {
+          "hit1": 1.0,
+          "hit3": 1.0,
+          "mrr_at_3": 1.0,
+          "predictions": [
+            {
+              "query": "Add a new book with title author price and publication status",
+              "expected": "EX-books-create",
+              "retrieved": [
+                "EX-books-create",
+                "EX-books-update",
+                "EX-tickets-create"
+              ]
+            },
+            {
+              "query": "Get a single book using its numeric ID",
+              "expected": "EX-books-get",
+              "retrieved": [
+                "EX-books-get",
+                "EX-tickets-get",
+                "EX-books-create"
+              ]
+            },
+            {
+              "query": "Change the editable fields and price of a book",
+              "expected": "EX-books-update",
+              "retrieved": [
+                "EX-books-update",
+                "EX-books-create",
+                "EX-books-get"
+              ]
+            },
+            {
+              "query": "Remove an existing book from the bookstore",
+              "expected": "EX-books-delete",
+              "retrieved": [
+                "EX-books-delete",
+                "EX-tickets-close",
+                "EX-books-create"
+              ]
+            },
+            {
+              "query": "Show all books but return only five results",
+              "expected": "EX-books-list",
+              "retrieved": [
+                "EX-books-list",
+                "EX-books-get",
+                "EX-books-delete"
+              ]
+            },
+            {
+              "query": "View every support ticket in the system",
+              "expected": "EX-tickets-list",
+              "retrieved": [
+                "EX-tickets-list",
+                "EX-tickets-get",
+                "EX-tickets-create"
+              ]
+            },
+            {
+              "query": "Open a ticket about an inability to log in",
+              "expected": "EX-tickets-create",
+              "retrieved": [
+                "EX-tickets-create",
+                "EX-tickets-close",
+                "EX-tickets-get"
+              ]
+            },
+            {
+              "query": "Read the support request having ticket ID one",
+              "expected": "EX-tickets-get",
+              "retrieved": [
+                "EX-tickets-get",
+                "EX-tickets-list",
+                "EX-tickets-close"
+              ]
+            },
+            {
+              "query": "Mark the support ticket as closed",
+              "expected": "EX-tickets-close",
+              "retrieved": [
+                "EX-tickets-close",
+                "EX-tickets-get",
+                "EX-tickets-list"
+              ]
+            },
+            {
+              "query": "POST a JSON book object into the catalog",
+              "expected": "EX-books-create",
+              "retrieved": [
+                "EX-books-create",
+                "EX-books-delete",
+                "EX-books-list"
+              ]
+            },
+            {
+              "query": "PUT the changed title author and price for a book",
+              "expected": "EX-books-update",
+              "retrieved": [
+                "EX-books-update",
+                "EX-books-create",
+                "EX-books-delete"
+              ]
+            },
+            {
+              "query": "PATCH a ticket to close it",
+              "expected": "EX-tickets-close",
+              "retrieved": [
+                "EX-tickets-close",
+                "EX-tickets-create",
+                "EX-tickets-get"
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "Small authored fixtures, not a general API benchmark.",
+    "No runtime execution or end-to-end API behavior test.",
+    "Citation validity does not establish semantic correctness of LLM descriptions.",
+    "No LLM training or fine-tuning is claimed."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "EP-e2988d0f1e": {
+    "summary": "Create a book in the in-memory catalog.",
+    "behavior": "The POST /v1/books endpoint creates a new book in the in-memory catalog. The book is saved in the `BOOKS` dictionary with the id of the book as the key and a dictionary representing the book as its value. The response contains a 201 status code and a JSON response describing the created book.",
+    "parameter_notes": [
+      {
+        "name": "book",
+        "description": "The book data to create."
+      }
+    ],
+    "evidence_ids": [
+      "SRC-3410d789d1",
+      "SRC-022ad8ac01",
+      "SRC-dfb2e6e320"
+    ],
+    "example_ids": [
+      "EX-books-create"
+    ],
+    "limitations": [
+      "The book title must be between 1 and 120 characters."
+    ],
+    "validation": "Citation IDs and parameter names checked. Semantic claims still need review.",
+    "model": "gemma:2b",
+    "seconds": 3.21,
+    "mode": "source + retrieved usage"
+  }
+}

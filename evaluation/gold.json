@@ -1,0 +1,27 @@
+{
+  "provenance": "Manually annotated authored demonstration APIs. Not a public benchmark or a measure of general documentation quality.",
+  "routes": {
+    "bookstore": [["GET","/health"],["GET","/v1/books"],["POST","/v1/books"],["GET","/v1/books/{book_id}"],["PUT","/v1/books/{book_id}"],["DELETE","/v1/books/{book_id}"]],
+    "support": [["GET","/api/tickets"],["POST","/api/tickets"],["GET","/api/tickets/{ticket_id}"],["PATCH","/api/tickets/{ticket_id}/close"]]
+  },
+  "retrieval_dev": [
+    ["Browse the bookstore catalog with a maximum result count","EX-books-list"],
+    ["Send a new support request with its title","EX-tickets-create"],
+    ["Delete a catalog entry by book identifier","EX-books-delete"],
+    ["Look up the details of one support ticket","EX-tickets-get"]
+  ],
+  "retrieval_test": [
+    ["Add a new book with title author price and publication status","EX-books-create"],
+    ["Get a single book using its numeric ID","EX-books-get"],
+    ["Change the editable fields and price of a book","EX-books-update"],
+    ["Remove an existing book from the bookstore","EX-books-delete"],
+    ["Show all books but return only five results","EX-books-list"],
+    ["View every support ticket in the system","EX-tickets-list"],
+    ["Open a ticket about an inability to log in","EX-tickets-create"],
+    ["Read the support request having ticket ID one","EX-tickets-get"],
+    ["Mark the support ticket as closed","EX-tickets-close"],
+    ["POST a JSON book object into the catalog","EX-books-create"],
+    ["PUT the changed title author and price for a book","EX-books-update"],
+    ["PATCH a ticket to close it","EX-tickets-close"]
+  ]
+}

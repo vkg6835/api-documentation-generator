@@ -1,0 +1,14 @@
+### EX-tickets-list | View every support ticket
+GET http://localhost:8002/api/tickets
+
+### EX-tickets-create | Open a support ticket
+POST http://localhost:8002/api/tickets
+Content-Type: application/json
+
+{"title":"Unable to sign in"}
+
+### EX-tickets-get | Look up one support ticket
+GET http://localhost:8002/api/tickets/1
+
+### EX-tickets-close | Close an existing support ticket
+PATCH http://localhost:8002/api/tickets/1/close

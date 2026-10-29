@@ -1,0 +1,3 @@
+# Runtime uses the Python standard library. No pip installation is needed.
+# The submitted FastAPI/Flask examples are analyzed, not executed.
+# Optional local text generation requires Ollama with gemma:2b.
