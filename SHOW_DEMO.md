@@ -1,4 +1,4 @@
-# Project 31 demonstration
+# Project demonstration
 
 Start with: “My project is an API Documentation Generator. It turns Python API source and usage examples into documentation with source references. A local LLM explains the code, while static analysis preserves declared API facts.”
 
